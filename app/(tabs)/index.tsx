@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Image, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, View, Text, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Font from 'expo-font';
 import AppLoadingScreen from '@/components/screens/AppLoading';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
-  
+
   const loadFonts = async () => {
     try {
         await Font.loadAsync({
             'RubikWetPaint-Regular': require('../../assets/fonts/RubikWetPaint-Regular.ttf'),
             'Nosifer-Regular': require('../../assets/fonts/Nosifer-Regular.ttf'),
+            'Nunito-Regular': require('../../assets/fonts/Nunito-Regular.ttf')
         });
         setFontsLoaded(true);
     } catch (error) {
@@ -29,7 +31,10 @@ const App = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        backgroundColor="#000000"
+      />
       <LinearGradient
         colors={['#000000B8', '#000000E5']}
         style={styles.background}
@@ -52,11 +57,14 @@ const App = () => {
           <Text style={styles.buttonText}>LET'S PLAY</Text>
         </TouchableOpacity>
       </LinearGradient>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -73,7 +81,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 280,
     height: 280,
-    marginTop:50,
+    marginTop: 50,
   },
   welcomeText: {
     fontFamily: 'Nosifer-Regular',
@@ -106,8 +114,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
+    fontFamily: 'Nunito-Regular',
     fontSize: 13,
-    fontWeight: '700',
     color: '#000000',
   },
 });
