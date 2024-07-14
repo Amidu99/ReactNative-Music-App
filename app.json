@@ -33,7 +33,8 @@
         {
           "fonts": [
             "./assets/fonts/RubikWetPaint-Regular.ttf",
-            "./assets/fonts/Nosifer-Regular.ttf"
+            "./assets/fonts/Nosifer-Regular.ttf",
+            "./assets/fonts/Nunito-Regular.ttf"
           ]
         }
       ]
