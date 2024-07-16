@@ -3,17 +3,17 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const PlayListNavBar = () => {
-    return(
-        <View style={styles.titleContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => router.push('player')}>
-            <FontAwesome size={24} name="arrow-left" color={'#8E8E8E'} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Music List</Text>
-          <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-            <FontAwesome size={24} name="heart" color={'#8E8E8E'} />
-          </TouchableOpacity>
-        </View>
-    );
+  return(
+    <View style={styles.titleContainer}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('player')}>
+        <FontAwesome size={24} name="arrow-left" color={'#8E8E8E'} />
+      </TouchableOpacity>
+      <Text style={styles.title}>Music List</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+        <FontAwesome size={24} name="heart" color={'#8E8E8E'} />
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
