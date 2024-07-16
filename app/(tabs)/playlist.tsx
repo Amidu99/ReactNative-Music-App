@@ -1,17 +1,20 @@
-import { View, Text, StyleSheet } from 'react-native';
+import PlaylistScreen from '@/components/screens/PlaylistScreen';
+import { AudioListProvider } from '@/contexts/AudioListContext';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Playlist() {
   return (
-    <View style={styles.container}>
-      <Text>List</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <AudioListProvider>
+        <PlaylistScreen></PlaylistScreen>
+      </AudioListProvider>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
