@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Fav_listScreen from '@/components/screens/Fav_listScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Fav_list() {
   return (
-    <View style={styles.container}>
-      <Text>Favourites</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <Fav_listScreen></Fav_listScreen>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
