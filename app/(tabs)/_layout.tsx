@@ -50,7 +50,7 @@ export default function TabLayout() {
           title: '',
           headerTitle: 'Favourite',
           headerShown: false,
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="heart" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="heart-o" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -59,7 +59,7 @@ export default function TabLayout() {
           title: '',
           headerTitle: 'Playlist',
           headerShown: false,
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="list" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome size={26} name="file-sound-o" color={color} />,
         }}
       />
     </Tabs>
