@@ -2,37 +2,18 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Font from 'expo-font';
-import AppLoadingScreen from '@/components/screens/AppLoading';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Slider } from 'react-native-elements';
+import Slider from "@react-native-community/slider";
 import { Animated } from 'react-native';
+import { useAudioList } from '@/contexts/AudioListContext';
 
 const Player = () => {
-  const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [title, setTitle] = useState('Unknown');
-  const [artist, setArtist] = useState('Unknown');
   const [duration, setDuration] = useState(0);
   const [albumArt, setAlbumArt] = useState(require('../../assets/images/App-logo.png'));
-  const [isPlaying, setIsPlaying] = useState(false);
   const rotation = useState(new Animated.Value(0))[0];
-
-  const loadFonts = async () => {
-    try {
-      await Font.loadAsync({
-        'Nunito-Regular': require('../../assets/fonts/Nunito-Regular.ttf'),
-      });
-      setFontsLoaded(true);
-    } catch (error) {
-      console.error("Error loading fonts:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadFonts();
-  }, []);
+  const { currentlyPlaying, playbackObject, isPlaying, setIsPlaying } = useAudioList();
 
   useEffect(() => {
     if (isPlaying) {
@@ -63,9 +44,16 @@ const Player = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  if (!fontsLoaded) {
-    return <AppLoadingScreen message="Loading..." />;
-  }
+  const togglePlayPause = async () => {
+    if (playbackObject) {
+      if (isPlaying) {
+        await playbackObject.pauseAsync();
+      } else {
+        await playbackObject.playAsync();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -77,7 +65,7 @@ const Player = () => {
           <TouchableOpacity style={styles.button} onPress={() => router.back()}>
             <FontAwesome size={24} name="arrow-left" color={'#8E8E8E'} />
           </TouchableOpacity>
-          <Text style={styles.songTitle}>{title}</Text>
+          <Text style={styles.songTitle}>{currentlyPlaying?.filename || 'Unknown'}</Text>
           <TouchableOpacity style={styles.button} onPress={() => router.back()}>
             <FontAwesome size={24} name="heart" color={'#8E8E8E'} />
           </TouchableOpacity>
@@ -99,19 +87,20 @@ const Player = () => {
           source={albumArt}
         />
         <View style={styles.trackDetailContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.artist}>{artist}</Text>
+          <Text style={styles.title}>{currentlyPlaying?.filename || 'Unknown'}</Text>
+          <Text style={styles.artist}>Artist</Text>
         </View>
         <View style={styles.playingBarContainer}>
           <Slider
             style={styles.slider}
-            value={Math.floor(currentTime)}
+            value={currentTime}
+            minimumValue={0}
             maximumValue={duration}
-            onValueChange={value => setCurrentTime(Math.floor(value))}
-            thumbTintColor="transparent"
+            onValueChange={(value) => setCurrentTime(value)}
             minimumTrackTintColor="#FDC70F"
-            maximumTrackTintColor="#8E8E8E"
-            trackStyle={{ height: 2 }}
+            maximumTrackTintColor="#fff"
+            thumbTintColor="#FDC70F"
+            step={1}
           />
           <View style={styles.timeContainer}>
             <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
@@ -121,7 +110,7 @@ const Player = () => {
             <TouchableOpacity style={styles.controlButton} onPress={() => {/* Previous action */}}>
               <FontAwesome name="backward" size={32} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.controlButton, styles.colorButton]} onPress={() => setIsPlaying(!isPlaying)}>
+            <TouchableOpacity style={[styles.controlButton, styles.colorButton]} onPress={togglePlayPause}>
               <FontAwesome name={isPlaying ? "pause" : "play"} size={32} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.controlButton} onPress={() => {/* Next action */}}>
