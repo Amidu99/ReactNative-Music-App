@@ -14,8 +14,7 @@ interface AudioFile {
 
 export default function PlaylistScreen() {
   const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
-  const [playbackObject, setPlaybackObject] = useState<Audio.Sound | null>(null);
-  const { currentlyPlaying, setCurrentlyPlaying } = useAudioList();
+  const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject } = useAudioList();
 
   useEffect(() => {
     (async () => {
@@ -36,7 +35,7 @@ export default function PlaylistScreen() {
       await playbackObj.loadAsync({ uri: item.uri });
       await playbackObj.playAsync();
       setPlaybackObject(playbackObj);
-      setCurrentlyPlaying(item.id);
+      setCurrentlyPlaying(item);
     } catch (error) {
       console.error('Error playing audio:', error);
     }
@@ -53,7 +52,7 @@ export default function PlaylistScreen() {
           data={audioFiles}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const isPlaying = currentlyPlaying === item.id;
+            const isPlaying = currentlyPlaying?.id === item.id;
             return (
               <TouchableOpacity style={styles.item} onPress={() => playAudio(item)}>
                 <Image source={defaultCover} style={styles.cover} />
