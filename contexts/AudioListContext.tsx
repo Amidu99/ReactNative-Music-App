@@ -1,8 +1,18 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { Audio } from 'expo-av';
+
+interface AudioFile {
+  id: string;
+  uri: string;
+  filename: string;
+  // metadata fields ++
+}
 
 interface AudioListContextProps {
-  currentlyPlaying: string | null;
-  setCurrentlyPlaying: (id: string | null) => void;
+  currentlyPlaying: AudioFile | null;
+  setCurrentlyPlaying: (file: AudioFile | null) => void;
+  playbackObject: Audio.Sound | null;
+  setPlaybackObject: (playback: Audio.Sound | null) => void;
 }
 
 interface AudioListProviderProps {
@@ -12,10 +22,11 @@ interface AudioListProviderProps {
 const AudioListContext = createContext<AudioListContextProps | undefined>(undefined);
 
 export const AudioListProvider: React.FC<AudioListProviderProps> = ({ children }) => {
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<AudioFile | null>(null);
+  const [playbackObject, setPlaybackObject] = useState<Audio.Sound | null>(null);
 
   return (
-    <AudioListContext.Provider value={{ currentlyPlaying, setCurrentlyPlaying }}>
+    <AudioListContext.Provider value={{ currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject }}>
       {children}
     </AudioListContext.Provider>
   );
