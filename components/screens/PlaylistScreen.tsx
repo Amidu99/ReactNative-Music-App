@@ -14,7 +14,7 @@ interface AudioFile {
 
 export default function PlaylistScreen() {
   const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
-  const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject } = useAudioList();
+  const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject, setIsPlaying } = useAudioList();
 
   useEffect(() => {
     (async () => {
@@ -36,6 +36,7 @@ export default function PlaylistScreen() {
       await playbackObj.playAsync();
       setPlaybackObject(playbackObj);
       setCurrentlyPlaying(item);
+      setIsPlaying(true);
     } catch (error) {
       console.error('Error playing audio:', error);
     }
