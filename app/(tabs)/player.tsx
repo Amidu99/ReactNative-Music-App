@@ -1,19 +1,42 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Slider from "@react-native-community/slider";
-import { Animated } from 'react-native';
+import Slider from '@react-native-community/slider';
+import { AVPlaybackStatus, AVPlaybackStatusSuccess } from 'expo-av';
 import { useAudioList } from '@/contexts/AudioListContext';
 
-const Player = () => {
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [albumArt, setAlbumArt] = useState(require('../../assets/images/App-logo.png'));
-  const rotation = useState(new Animated.Value(0))[0];
+const Player: React.FC = () => {
   const { currentlyPlaying, playbackObject, isPlaying, setIsPlaying } = useAudioList();
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [albumArt, setAlbumArt] = useState<any>(require('../../assets/images/App-logo.png'));
+  const rotation = useRef(new Animated.Value(0)).current;
+  const [playbackStatus, setPlaybackStatus] = useState<AVPlaybackStatusSuccess | null>(null);
+
+  const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
+    if (status.isLoaded) {
+      setPlaybackStatus(status as AVPlaybackStatusSuccess);
+      setCurrentTime(status.positionMillis / 1000);
+
+      if (status.durationMillis !== undefined) {
+        setDuration(status.durationMillis / 1000);
+      }
+
+      if (status.didJustFinish && !status.isLooping) {
+        setIsPlaying(false);
+        stopRotation();
+      }
+    }
+  }, [setIsPlaying]);
+
+  useEffect(() => {
+    if (playbackObject) {
+      playbackObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    }
+  }, [playbackObject, onPlaybackStatusUpdate]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -28,7 +51,7 @@ const Player = () => {
     Animated.loop(
       Animated.timing(rotation, {
         toValue: 1,
-        duration: 25000,
+        duration: duration * 500,
         useNativeDriver: true,
       })
     ).start();
@@ -65,9 +88,15 @@ const Player = () => {
           <TouchableOpacity style={styles.button} onPress={() => router.back()}>
             <FontAwesome size={24} name="arrow-left" color={'#8E8E8E'} />
           </TouchableOpacity>
-          <Text style={styles.songTitle}>{currentlyPlaying?.filename || 'Unknown'}</Text>
+          <Text style={styles.songTitle}>
+            {currentlyPlaying?.filename 
+              ? (currentlyPlaying.filename.length > 20 
+                ? currentlyPlaying.filename.substring(0, 20) + '...' 
+                : currentlyPlaying.filename)
+            : 'Unknown'}
+          </Text>
           <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-            <FontAwesome size={24} name="heart" color={'#8E8E8E'} />
+            <FontAwesome size={24} name="bars" color={'#8E8E8E'} />
           </TouchableOpacity>
         </View>
         <Animated.Image
@@ -87,8 +116,14 @@ const Player = () => {
           source={albumArt}
         />
         <View style={styles.trackDetailContainer}>
-          <Text style={styles.title}>{currentlyPlaying?.filename || 'Unknown'}</Text>
-          <Text style={styles.artist}>Artist</Text>
+          <Text style={styles.title}>
+            {currentlyPlaying?.filename 
+              ? (currentlyPlaying.filename.length > 50 
+                ? currentlyPlaying.filename.substring(0, 50) + '...' 
+                : currentlyPlaying.filename)
+            : 'Unknown'}
+          </Text>
+          <Text style={styles.artist}>Unknown Artist</Text>
         </View>
         <View style={styles.playingBarContainer}>
           <Slider
@@ -216,7 +251,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Nunito-Regular',
-    fontSize: 22,
+    fontSize: 20,
     color: '#fff',
     textAlign: 'center',
     marginHorizontal: 5,
