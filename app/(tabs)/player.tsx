@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import { AVPlaybackStatus, AVPlaybackStatusSuccess } from 'expo-av';
 import { useAudioList } from '@/contexts/AudioListContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 const Player: React.FC = () => {
   const { currentlyPlaying, playbackObject, isPlaying, setIsPlaying } = useAudioList();
@@ -15,6 +16,8 @@ const Player: React.FC = () => {
   const [albumArt, setAlbumArt] = useState<any>(require('../../assets/images/App-logo.png'));
   const rotation = useRef(new Animated.Value(0)).current;
   const [playbackStatus, setPlaybackStatus] = useState<AVPlaybackStatusSuccess | null>(null);
+  const { toggleFavorite, favoriteSongs } = useFavorites();
+  const isFavorite = currentlyPlaying && favoriteSongs.some(song => song.id === currentlyPlaying.id);
 
   const onPlaybackStatusUpdate = useCallback((status: AVPlaybackStatus) => {
     if (status.isLoaded) {
@@ -78,6 +81,12 @@ const Player: React.FC = () => {
     }
   };
 
+  const toggleFav = () => {
+    if (currentlyPlaying) {
+      toggleFavorite(currentlyPlaying);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <LinearGradient
@@ -95,8 +104,8 @@ const Player: React.FC = () => {
                 : currentlyPlaying.filename)
             : 'Unknown'}
           </Text>
-          <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-            <FontAwesome size={24} name="bars" color={'#8E8E8E'} />
+          <TouchableOpacity style={styles.button} onPress={toggleFav}>
+            <FontAwesome name={isFavorite ? "heart" : "heart-o"} size={24} color="#FDC70F" />
           </TouchableOpacity>
         </View>
         <Animated.Image
@@ -222,7 +231,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     width: '100%',
-    marginTop: 10,
+    marginTop: 20,
   },
   controlButton: {
     padding: 10,
@@ -246,19 +255,20 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   timeText: {
-    color: '#FDC70F',
     fontFamily: 'Nunito-Regular',
+    fontSize: 14,
+    color: '#fff',
   },
   title: {
     fontFamily: 'Nunito-Regular',
-    fontSize: 20,
+    fontSize: 18,
     color: '#fff',
     textAlign: 'center',
     marginHorizontal: 5,
   },
   artist: {
     fontFamily: 'Nunito-Regular',
-    fontSize: 18,
+    fontSize: 16,
     color: '#8E8E8E',
     textAlign: 'center',
     marginHorizontal: 5,
