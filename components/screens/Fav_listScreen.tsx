@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
 import { useAudioList } from '../../contexts/AudioListContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import ScreenBackground from '../screenComponents/ScreenBackground';
 import FavListNavBar from '../screenComponents/FavListNavBar';
 
@@ -44,24 +45,21 @@ const audioFiles: AudioFile[] = [
   },
 ];
 
-export default function Fav_listScreen() {
-    const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject, setIsPlaying } = useAudioList();
-  
-    const playAudio = async (item: AudioFile) => {
-      try {
-        if (playbackObject !== null) {
-          await playbackObject.unloadAsync();
-        }
-        const playbackObj = new Audio.Sound();
-        await playbackObj.loadAsync(item.uri);
-        await playbackObj.playAsync();
-        setPlaybackObject(playbackObj);
-        setCurrentlyPlaying(item);
-        setIsPlaying(true);
-      } catch (error) {
-        console.error('Error playing audio:', error);
-      }
-    };
+
+const Fav_listScreen: React.FC = () => {
+  const { favoriteSongs } = useFavorites();
+  const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject, setIsPlaying } = useAudioList();
+
+  const playAudio = async (audio: AudioFile) => {
+    if (playbackObject) {
+      await playbackObject.unloadAsync();
+      const { sound } = await Audio.Sound.createAsync({ uri: audio.uri });
+      setCurrentlyPlaying(audio);
+      setPlaybackObject(sound);
+      await sound.playAsync();
+      setIsPlaying(true);
+    }
+  };
   
     const defaultCover = require('../../assets/images/App-logo.png');
     const defaultArtist = 'Unknown Artist';
@@ -71,7 +69,7 @@ export default function Fav_listScreen() {
         <FavListNavBar />
         <View style={styles.listContainer}>
           <FlatList
-            data={audioFiles}
+            data={favoriteSongs}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               const isPlaying = currentlyPlaying?.id === item.id;
@@ -89,7 +87,7 @@ export default function Fav_listScreen() {
         </View>
       </ScreenBackground>
     );
-  }
+  };
   
   const styles = StyleSheet.create({
     listContainer: {
@@ -127,3 +125,5 @@ export default function Fav_listScreen() {
       color: '#FDC70F',
     },
   });
+
+  export default Fav_listScreen;
