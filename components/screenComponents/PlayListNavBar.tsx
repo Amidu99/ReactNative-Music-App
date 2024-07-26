@@ -10,7 +10,7 @@ const PlayListNavBar = () => {
       </TouchableOpacity>
       <Text style={styles.title}>Music List</Text>
       <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-        <FontAwesome size={24} name="heart" color={'#8E8E8E'} />
+        <FontAwesome size={24} name="bars" color={'#8E8E8E'} />
       </TouchableOpacity>
     </View>
   );
