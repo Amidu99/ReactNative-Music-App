@@ -10,7 +10,7 @@ import { useAudioList } from '@/contexts/AudioListContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
 
 const Player: React.FC = () => {
-  const { currentlyPlaying, playbackObject, isPlaying, setIsPlaying } = useAudioList();
+  const { currentlyPlaying, playbackObject, isPlaying, setIsPlaying, playPrevious, playNext } = useAudioList();
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   const [albumArt, setAlbumArt] = useState<any>(require('../../assets/images/App-logo.png'));
@@ -31,9 +31,10 @@ const Player: React.FC = () => {
       if (status.didJustFinish && !status.isLooping) {
         setIsPlaying(false);
         stopRotation();
+        playNext();
       }
     }
-  }, [setIsPlaying]);
+  }, [setIsPlaying, playNext]);
 
   useEffect(() => {
     if (playbackObject) {
@@ -151,13 +152,13 @@ const Player: React.FC = () => {
             <Text style={styles.timeText}>{formatTime(duration)}</Text>
           </View>
           <View style={styles.controlButtonsContainer}>
-            <TouchableOpacity style={styles.controlButton} onPress={() => {/* Previous action */}}>
+            <TouchableOpacity style={styles.controlButton} onPress={playPrevious}>
               <FontAwesome name="backward" size={32} color="#fff" />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.controlButton, styles.colorButton]} onPress={togglePlayPause}>
               <FontAwesome name={isPlaying ? "pause" : "play"} size={32} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.controlButton} onPress={() => {/* Next action */}}>
+            <TouchableOpacity style={styles.controlButton} onPress={playNext}>
               <FontAwesome name="forward" size={32} color="#fff" />
             </TouchableOpacity>
           </View>
