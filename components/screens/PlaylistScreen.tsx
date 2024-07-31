@@ -13,8 +13,7 @@ interface AudioFile {
 }
 
 export default function PlaylistScreen() {
-  const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
-  const { currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject, setIsPlaying } = useAudioList();
+  const { audioFiles, setAudioFiles, currentlyPlaying, setCurrentlyPlaying, playbackObject, setPlaybackObject, setIsPlaying } = useAudioList();
 
   useEffect(() => {
     (async () => {
